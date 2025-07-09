@@ -4,6 +4,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)  # Bật CORS cho toàn bộ domain
 DATA_MAPPING = {
+    "kệ trung tải": "0316591373",
     "apptanglike": "Copyright",
     "apptanglike net": "Copyright",
     "thuê xe tự lái đà nẵng": "901150150",
