@@ -6,6 +6,8 @@ CORS(app)  # Bật CORS cho toàn bộ domain
 
 # Dữ liệu ánh xạ
 DATA_MAPPING = {
+    "thuê xe máy đà nẵng": "901150150",
+    "sun casa square suncasasquares .com": "975769123",
     "Mô Hình Sàn Tiếp Thị Liên Kết": "Storytelling",
     "Mô hình Affiliate Marketing permate là gì": "Storytelling",
     "bác sĩ nguyên giáp phốt": "989090599",
