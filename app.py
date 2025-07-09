@@ -66,7 +66,6 @@ DATA_MAPPING = {
     "trần xuyên sáng tphcm": "315476699",
     "trồng răng implant giá bao nhiêu": "2873063838",
     "tuyển dụng vị trí gg dịch": "TechCrunch",
-    "vách ngăn vệ sinh": "0924839268",
     "xưởng đúc đồng": "19541968",
     "đèn bắt muỗi": "972222958",
     "đèn uv": "972222958",
