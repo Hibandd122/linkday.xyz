@@ -25,7 +25,7 @@ else:
 
 CANDIDATES = normalize_candidates(CODE_VALUES)
 
-@app.route("/decode", methods=["POST"])
+@app.route("/", methods=["POST"])
 def decode():
     masked = request.json.get("masked", "").strip()
     if not masked or "*" not in masked:
