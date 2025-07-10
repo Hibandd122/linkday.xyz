@@ -44,6 +44,5 @@ def decode():
 
     return jsonify({"success": False, "message": "❌ Không tìm thấy mã khớp."})
 
-
 if __name__ == "__main__":
     app.run(debug=True)
