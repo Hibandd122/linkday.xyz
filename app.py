@@ -32,32 +32,20 @@ def decode():
     if not masked or "*" not in masked:
         return jsonify({"success": False, "message": "❌ Dữ liệu không hợp lệ hoặc không chứa dấu *."})
 
-    match = re.search(r"(\w{2,})\*+(\w{1,})", masked)
-    if not match:
-        return jsonify({"success": False, "message": "❌ Không thể trích xuất prefix/suffix."})
+    prefix = masked.split("*")[0].lower()
+    suffix = masked.split("*")[-1].lower()
 
-    prefix, suffix = match.group(1).lower(), match.group(2).lower()
-    masked_has_special = any(c in masked for c in "@#$.!?")
+    # 👉 Tách phần đặc biệt sau suffix (vd: "@", "#", ...)
+    suffix_clean = ''.join(filter(str.isalnum, suffix))
 
     for code in CANDIDATES:
-        code_lower = code.lower()
-
-        # Kiểm tra khớp
-        if code_lower.startswith(prefix) and code_lower.endswith(suffix):
-            # Nếu masked có ký tự đặc biệt → trả về full
-            # Nếu không → loại bỏ ký tự đặc biệt cuối (nếu có)
-            if not masked_has_special:
-                code_clean = re.sub(r"[@#$.!?]+$", "", code)
-                return jsonify({
-                    "success": True,
-                    "masked": masked,
-                    "decoded": code_clean
-                })
-            else:
-                return jsonify({
-                    "success": True,
-                    "masked": masked,
-                    "decoded": code
-                })
+        code_clean = ''.join(filter(str.isalnum, code))
+        if code_clean.lower().startswith(prefix) and code_clean.lower().endswith(suffix_clean):
+            return jsonify({
+                "success": True,
+                "masked": masked,
+                "decoded": code
+            })
 
     return jsonify({"success": False, "message": "❌ Không tìm thấy mã khớp."})
+
