@@ -31,11 +31,16 @@ def decode():
     if not masked or "*" not in masked:
         return jsonify({"success": False, "message": "❌ Dữ liệu không hợp lệ hoặc không chứa dấu *."})
 
-    prefix = masked.split("*")[0].lower()
-    suffix = masked.split("*")[-1].lower()
+    import re
+    match = re.search(r"(\w{2,})\*+(\w{1,})", masked)
+    if not match:
+        return jsonify({"success": False, "message": "❌ Không thể trích xuất prefix/suffix."})
+
+    prefix, suffix = match.group(1).lower(), match.group(2).lower()
 
     for code in CANDIDATES:
-        if code.lower().startswith(prefix) and code.lower().endswith(suffix):
+        code_lower = code.lower()
+        if code_lower.startswith(prefix) and suffix in code_lower:
             return jsonify({
                 "success": True,
                 "masked": masked,
@@ -43,3 +48,4 @@ def decode():
             })
 
     return jsonify({"success": False, "message": "❌ Không tìm thấy mã khớp."})
+
