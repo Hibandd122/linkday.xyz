@@ -1,99 +1,69 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import json
+import os
 
 app = Flask(__name__)
-CORS(app)  # Bật CORS cho toàn bộ domain
-DATA_MAPPING = {
-    "kệ trung tải": "0316591373",
-    "apptanglike": "Copyright",
-    "apptanglike net": "Copyright",
-    "taxi sân bay nội bài": "15984e6479@",
-    "thuê xe tự lái đà nẵng": "901150150",
-    "quà tặng đối tác mai vàng rồng việt": "019541968",
-    "bán nắp hố ga": "0962271868",
-    "sâm tươi hàn quốc kgin": "0936319818",
-    "diệt mối tận gốc tại bình dương dietmoitamphat.com": "0315900364",
-    "thuê xe máy đà nẵng": "901150150",
-    "sun casa square suncasasquares .com": "975769123",
-    "Mô Hình Sàn Tiếp Thị Liên Kết": "Storytelling",
-    "Mô hình Affiliate Marketing permate là gì": "Storytelling",
-    "bác sĩ nguyên giáp phốt": "0989090599",
-    "bán laptop cũ": "0110617518",
-    "bình xe điện trẻ em": "0919267266",
-    "celadon city": "975769123",
-    "chi phí thay bàn phím laptop": "0110617518",
-    "chivas 12 ruoutaychinhhang": "AnnabelMeikle",
-    "chống thấm ngược cho tường": "0972839232",
-    "chống thấm ngược tường nhà": "0972839232",
-    "chống thấm tường nhà cũ": "0972839232",
-    "chống thấm vách tường": "0972839232",
-    "cung cấp khí công nghiệp dakhien": "0906666858",
-    "cỏ nhân tạo khánh phát": "0877799988",
-    "cửa hàng hoa sunny": "08675228625",
-    "du lịch hoàng việt": "/2015/CDLQGVN",
-    "ghế công thái học bchair": "0988626962",
-    "ghế giám đốc bchair": "0988626962",
-    "hút bể phốt tại ba đình": "046616888",
-    "hút bể phốt tại hà nội": "046616888",
-    "hút bể phốt tại long biên": "046616888",
-    "hút hầm cầu bình dương": "0701743714",
-    "hút hầm cầu châu đức huthamcaubaria24h.com": "0963588919",
-    "hút hầm cầu phú mỹ huthamcaubaria24h.com": "0963588919",
-    "hút hầm cầu đà nẵng": "023123456",
-    "job gg dịch": "TechCrunch",
-    "kiếm tiền affiliate": "ReferralPermate",
-    "kiếm tiền với affiliate": "ReferralPermate",
-    "kế hoạch kiếm tiền affiliate": "ReferralPermate",
-    "máy bắt muỗi": "0972222958",
-    "máy rửa chén bát công nghiệp": "0972222958",
-    "niềng răng bao nhiêu elite dental": "02873063838",
-    "nắp ga composite 850x850": "0946402868",
-    "nắp hố ga": "0946402868",
-    "nền tảng affiliate": "AffiliatePlatform",
-    "nền tảng affiliate marketing": "AffiliatePlatform",
-    "proxy us": "THANKYOU",
-    "quà mừng thọ": "019541968",
-    "quà tặng sếp nam": "019541968",
-    "sàn tiếp thị liên kết là gì": "Storytelling",
-    "sơn dầu chống thấm ngoài trời": "0972839232",
-    "sạc pin laptop dell mới mua": "0110617518",
-    "sửa chữa laptop quận 3": "0981537570",
-    "sửa chữa laptop quận bình thạnh": "0110617518",
-    "sửa chữa laptop tại nhà hà nội": "0110617518",
-    "sửa pin laptop dell bao nhiêu tiền": "0110617518",
-    "tem nhãn thực phẩm insonnguyen.vn": "HswA#1Rt%@",
-    "thay màn hình laptop": "0110617518",
-    "thay ắc quy ô tô mazda 3": "0919267266",
-    "thiết kế website": "0315552572",
-    "thép lưới hàn": "0301155522",
-    "thông cống nghẹt bình dương": "0701743714",
-    "thông cống nghẹt đà nẵng": "023123456",
-    "thông tắc cống tại hà nội": "046616888",
-    "topacquy": "0919267266",
-    "trần xuyên sáng": "0315476699",
-    "trần xuyên sáng barrisol": "0315476699",
-    "trần xuyên sáng tphcm": "0315476699",
-    "trồng răng implant giá bao nhiêu": "02873063838",
-    "tuyển dụng vị trí gg dịch": "TechCrunch",
-    "xưởng đúc đồng": "019541968",
-    "đèn bắt muỗi": "0972222958",
-    "đèn uv": "0972222958",
-    "đông trùng hạ thảo": "0367306846",
-    "đông trùng hạ thảo khô": "0367306846",
-    "đồ cũ hà nội ngọc hưng": "hosyngoc91",
-    "ắc quy delkor": "0919267266",
-    "ắc quy gs": "0919267266",
-    "ắc quy gs 60ah": "0919267266",
-    "ắc quy varta": "0919267266",
-    "ắc quy xe mercedes c250": "0919267266",
-    "ắc quy xe morning": "0919267266",
-    "ắc quy xe điện": "0919267266",
-    "ắc quy xe đạp điện": "0919267266",
-    "ắc quy đồng nai": "0919267266"
-}
-@app.route("/", methods=["POST"])
-def get_all_data():
-    return jsonify(DATA_MAPPING), 200, {'Content-Type': 'application/json; charset=utf-8'}
+CORS(app)
+
+DATA_FILE = "code.json"
+
+def normalize_candidates(codes):
+    candidates = set()
+    for code in codes:
+        candidates.add(code)
+        if code.isdigit() and code.startswith("0"):
+            candidates.add(code[1:])  # thêm phiên bản bỏ số 0
+    return candidates
+
+# Load dữ liệu từ code.json
+if os.path.exists(DATA_FILE):
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
+        CODE_VALUES = set(json.load(f))
+else:
+    CODE_VALUES = set()
+
+CANDIDATES = normalize_candidates(CODE_VALUES)
+
+@app.route("/decode", methods=["POST"])
+def decode():
+    masked = request.json.get("masked", "").strip()
+    if not masked or "*" not in masked:
+        return jsonify({"success": False, "message": "❌ Dữ liệu không hợp lệ hoặc không chứa dấu *."})
+
+    prefix = masked.split("*")[0].lower()
+    suffix = masked.split("*")[-1].lower()
+
+    for code in CANDIDATES:
+        if code.lower().startswith(prefix) and code.lower().endswith(suffix):
+            return jsonify({
+                "success": True,
+                "masked": masked,
+                "decoded": code
+            })
+
+    return jsonify({"success": False, "message": "❌ Không tìm thấy mã khớp."})
+
+@app.route("/themcode", methods=["POST"])
+def them_code():
+    new_code = request.json.get("code", "").strip()
+    if not new_code:
+        return jsonify({"success": False, "message": "❌ Không có mã được gửi lên."})
+
+    if new_code in CODE_VALUES:
+        return jsonify({"success": False, "message": "⚠️ Mã đã tồn tại trong danh sách."})
+
+    # Thêm vào CODE_VALUES và cập nhật code.json
+    CODE_VALUES.add(new_code)
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(sorted(CODE_VALUES), f, ensure_ascii=False, indent=2)
+
+    # Cập nhật CANDIDATES (có thể thêm bản không có số 0 đầu)
+    global CANDIDATES
+    CANDIDATES = normalize_candidates(CODE_VALUES)
+
+    return jsonify({"success": True, "message": f"✅ Đã thêm mã mới: {new_code}"})
+
 
 if __name__ == "__main__":
     app.run(debug=True)
