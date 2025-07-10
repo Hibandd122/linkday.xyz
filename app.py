@@ -44,26 +44,6 @@ def decode():
 
     return jsonify({"success": False, "message": "❌ Không tìm thấy mã khớp."})
 
-@app.route("/themcode", methods=["POST"])
-def them_code():
-    new_code = request.json.get("code", "").strip()
-    if not new_code:
-        return jsonify({"success": False, "message": "❌ Không có mã được gửi lên."})
-
-    if new_code in CODE_VALUES:
-        return jsonify({"success": False, "message": "⚠️ Mã đã tồn tại trong danh sách."})
-
-    # Thêm vào CODE_VALUES và cập nhật code.json
-    CODE_VALUES.add(new_code)
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(sorted(CODE_VALUES), f, ensure_ascii=False, indent=2)
-
-    # Cập nhật CANDIDATES (có thể thêm bản không có số 0 đầu)
-    global CANDIDATES
-    CANDIDATES = normalize_candidates(CODE_VALUES)
-
-    return jsonify({"success": True, "message": f"✅ Đã thêm mã mới: {new_code}"})
-
 
 if __name__ == "__main__":
     app.run(debug=True)
